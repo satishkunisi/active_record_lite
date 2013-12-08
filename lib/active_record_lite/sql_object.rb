@@ -77,8 +77,6 @@ class SQLObject < MassObject
       (#{values_string})
     SQL
 
-    puts query
-
     DBConnection.execute(query, *attribute_values)
 
   end

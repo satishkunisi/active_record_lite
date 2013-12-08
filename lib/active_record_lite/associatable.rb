@@ -17,26 +17,33 @@ class BelongsToAssocParams < AssocParams
     defaults = {
       :other_class_name => name,
       :primary_key => "id",
-      :foreign_key => "#{name}_id"
+      :foreign_key => "#{name.downcase}_id"
     }
 
-    params = defaults.merge(params)
-
-    params.each do |method, value|
-      self.class.define_method(method) do
-        value
-      end
-    end
-
-    self.class.define_method(:other_class) do
-      name.constantize
-    end
-
-    self.class.define_method(:other_table_name) do
-      name.constantize.table_name
-    end
-
+    @params = defaults.merge(params)
   end
+
+  def other_class_name
+    @params[:other_class_name]
+  end
+
+  def primary_key
+    @params[:primary_key]
+  end
+
+  def foreign_key
+    @params[:foreign_key]
+  end
+
+  def other_class
+    other_class_name.constantize
+  end
+
+  def other_class_table
+    other_class.table_name
+  end
+
+
 
   def type
   end
@@ -56,11 +63,29 @@ module Associatable
 
   def belongs_to(name, params = {})
     aps = BelongsToAssocParams.new(name, params)
-    self.class.parse_all
+    define_method(name) do
+      query = <<-SQL
+      SELECT
+        *
+      FROM
+        #{aps.other_class_table}
+      WHERE
+        #{aps.primary_key} = ?
+      SQL
+
+
+      fk = self.send(aps.foreign_key)
+      results = DBConnection.execute(query, fk)
+
+      result = aps.other_class.parse_all(results)[0]
+      result
+    end
+
 
   end
 
   def has_many(name, params = {})
+
   end
 
   def has_one_through(name, assoc1, assoc2)

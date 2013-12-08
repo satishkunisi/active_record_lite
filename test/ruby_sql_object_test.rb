@@ -8,6 +8,8 @@ DBConnection.open(cats_db_file_name)
 class Cat < SQLObject
   set_table_name("cats")
   my_attr_accessible(:id, :name, :owner_id)
+
+  belongs_to :human, :class_name => "Human", :primary_key => :id, :foreign_key => :owner_id
 end
 
 class Human < SQLObject
@@ -15,17 +17,19 @@ class Human < SQLObject
   my_attr_accessible(:id, :fname, :lname, :house_id)
 end
 
-p Human.find(1)
-p Cat.find(1)
-p Cat.find(2)
-
-p Human.all
-p Cat.all
+# p Human.find(1)
+# p Cat.find(1)
+# p Cat.find(2)
+#
+# p Human.all
+# p Cat.all
 
 c = Cat.new(:name => "Gizmo", :owner_id => 1)
-p c.id
+
 c.save
 
 h = Human.find(1)
+c.human
 # just run an UPDATE; no values changed, so shouldnt hurt the db
 h.save
+
