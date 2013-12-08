@@ -15,6 +15,8 @@ end
 class Human < SQLObject
   set_table_name("humans")
   my_attr_accessible(:id, :fname, :lname, :house_id)
+
+  has_many :cats, :foreign_key => :owner_id
 end
 
 # p Human.find(1)
@@ -32,4 +34,6 @@ h = Human.find(1)
 c.human
 # just run an UPDATE; no values changed, so shouldnt hurt the db
 h.save
+
+puts h.cats
 

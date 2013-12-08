@@ -58,7 +58,7 @@ class MassObject
         if self.class.attributes.include?(attr_name)
           self.send("#{attr_name}=", attr_value)
         else
-          raise "Can't mass-asign non-whitelisted attributes."
+          raise "Can't mass-asign non-whitelisted attributes: #{attr_name}"
         end
       end
 
